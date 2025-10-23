@@ -10,10 +10,10 @@
  *  - Inserts unique, lowercased githubName values
  */
 
-const fs = require('fs');
-const path = require('path');
-const dotenv = require('dotenv'); 
-const pkg = require('pg');
+const fs = require("fs");
+const path = require("path");
+const dotenv = require("dotenv");
+const pkg = require("pg");
 
 const { Client } = pkg;
 
@@ -23,16 +23,18 @@ const { Client } = pkg;
     dotenv.config();
 
     // --- Check command line arguments ---
-    const [,, filePath] = process.argv;
+    const [, , filePath] = process.argv;
     if (!filePath) {
-      console.error('❌ Error: You must provide exactly one argument — the path to the input file.');
+      console.error(
+        "❌ Error: You must provide exactly one argument — the path to the input file."
+      );
       process.exit(1);
     }
 
     // --- Check DATABASE_URL ---
     const dbUrl = process.env.DATABASE_URL;
     if (!dbUrl) {
-      console.error('❌ Error: DATABASE_URL not found in environment.');
+      console.error("❌ Error: DATABASE_URL not found in environment.");
       process.exit(1);
     }
 
@@ -43,7 +45,7 @@ const { Client } = pkg;
       process.exit(1);
     }
 
-    const lines = fs.readFileSync(absPath, 'utf-8').split('\n');
+    const lines = fs.readFileSync(absPath, "utf-8").split("\n");
 
     // --- Connect to the database ---
     const client = new Client({ connectionString: dbUrl });
@@ -55,7 +57,7 @@ const { Client } = pkg;
       const line = rawLine.trim();
 
       // Skip blank or comment lines
-      if (!line || line.startsWith('#')) continue;
+      if (!line || line.startsWith("#")) continue;
 
       // Validate GitHub username: letters, numbers, dashes, <=39 chars
       if (!/^[a-zA-Z0-9-]{1,39}$/.test(line)) {
@@ -73,7 +75,7 @@ const { Client } = pkg;
         addedCount += result.rowCount;
       } catch (err) {
         // Ignore unique constraint violations
-        if (err.code === '23505') continue;
+        if (err.code === "23505") continue;
         console.error(`❌ Database error: ${err.message}`);
         await client.end();
         process.exit(1);
